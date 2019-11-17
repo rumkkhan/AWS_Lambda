@@ -29,10 +29,19 @@ namespace S3Test.controllers
 
        [HttpPost]
        [Route("AddFile/{bucketName}")]
-       public async Task<IActionResult> AddFile([FromRoute] string backetName)
+       public async Task<IActionResult> AddFile([FromRoute] string bucketName)
         {
-            var response = await _service.uploadFileAsync(backetName);
-            return Ok(response);
+             await _service.UploadFileSync(bucketName);
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("GetFile/{bucketName}")]
+        public async Task<IActionResult> GetObjectFromS3Async([FromRoute] string bucketName)
+        {
+            await _service.GetObjectFromS3Async(bucketName);
+
+            return Ok();
         }
     }
 }

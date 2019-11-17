@@ -65,7 +65,7 @@ namespace S3Test.services
             };
         }
 
-        private const string FilePath = "C:\\PersonalDev\\AWS\\S3Bucket\\s3testFile.text";
+        private const string FilePath = "C:\\Steps.txt";
         private const string UploadWithKeyName = "UploadWithKeyName";
         private const string FileStreamUpload = "FileStreamUpload";
         private const string AdvancedUpload = "AdvancedUpload";
@@ -111,6 +111,40 @@ namespace S3Test.services
             }
         }
 
+        public async Task GetObjectFromS3Async(string buckName)
+        {
+            const string keyName = "Steps.txt";
 
+            try
+            {
+                var request = new GetObjectRequest
+                { 
+                        BucketName = buckName,
+                        Key = keyName
+                        
+                };
+                string responseBody;
+                using (var response = await _client.GetObjectAsync(request))
+                using (var responseStream = response.ResponseStream)
+                using (var reader = new StreamReader(responseStream))
+                {
+                    var title = response.Metadata["x-amz-meta-title"];
+                    var contentType = response.Headers["Content-Type"];
+
+                    responseBody = reader.ReadToEnd();
+                }
+                var pathAndFileName = $"D:\\{keyName}";
+                var createText = responseBody;
+                File.WriteAllText(pathAndFileName, createText);
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine("error encoutered on server. Message: '{0}' when writing an object", e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("UnKnown encountered on server. Message:'{0}' when writing an object", e.Message);
+            }
+        }
     }
 }
