@@ -2,9 +2,11 @@
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
+using ClosedXML.Excel;
 using S3Test.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -113,29 +115,71 @@ namespace S3Test.services
 
         public async Task GetObjectFromS3Async(string buckName)
         {
-            const string keyName = "Steps.txt";
+            const string keyName = "Create.xlsx";
 
             try
             {
                 var request = new GetObjectRequest
-                { 
-                        BucketName = buckName,
-                        Key = keyName
-                        
+                {
+                    BucketName = buckName,
+                    Key = keyName
+
                 };
                 string responseBody;
+                byte[] data;
                 using (var response = await _client.GetObjectAsync(request))
                 using (var responseStream = response.ResponseStream)
-                using (var reader = new StreamReader(responseStream))
+                using (XLWorkbook workBook = new XLWorkbook(responseStream))
                 {
-                    var title = response.Metadata["x-amz-meta-title"];
-                    var contentType = response.Headers["Content-Type"];
+                    //Read the first Sheet from Excel file.
+                    IXLWorksheet workSheet = workBook.Worksheet(1);
 
-                    responseBody = reader.ReadToEnd();
+                    //Create a new DataTable.
+                    DataTable dt = new DataTable();
+                    bool firstRow = true;
+                  
+                    foreach (IXLRow row in workSheet.Rows())
+                    {
+                        //Use the first row to add columns to DataTable.
+                        if (firstRow)
+                        {
+                            foreach (IXLCell cell in row.Cells())
+                            {
+                                dt.Columns.Add(cell.Value.ToString());
+                            }
+                            firstRow = false;
+                        }
+                        else
+                        {
+                            //Add rows to DataTable.
+                            dt.Rows.Add();
+                            int i = 0;
+                            foreach (IXLCell cell in row.Cells())
+                            {
+                                dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
+                                i++;
+                            }
+                        }
+
+                    }
+                    //    using (var reader = new StreamReader(responseStream))
+                    //{
+                    //    var title = response.Metadata["x-amz-meta-title"];
+                    //    var contentType = response.Headers["Content-Type"];
+                    //    var pathAndFileName = $"D:\\{keyName}";
+                    //    responseBody = reader.ReadToEnd();
+                    //    using (MemoryStream ms = new MemoryStream())
+                    //    {
+                    //        reader.BaseStream.CopyTo(ms);
+                    //        data = ms.ToArray();
+                    //    }
+                    //    File.WriteAllBytes("pathAndFileName", data);
+                    //    //byte[] bytes = reader;
+                    //}
+                    var pathAndFileNamee = $"D:\\{keyName}";
+                    var createText = "";
+                    File.WriteAllText(pathAndFileNamee, createText);
                 }
-                var pathAndFileName = $"D:\\{keyName}";
-                var createText = responseBody;
-                File.WriteAllText(pathAndFileName, createText);
             }
             catch (AmazonS3Exception e)
             {

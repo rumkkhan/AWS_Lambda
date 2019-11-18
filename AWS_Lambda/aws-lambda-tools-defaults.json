@@ -6,7 +6,7 @@
         "dotnet lambda help",
         "All the command line options for the Lambda command can be specified in this file."
     ],
-    "profile"     : "default",
+    "profile"     : "mohd.ramzan@relyonsoft.com",
     "region"      : "ap-south-1",
     "configuration" : "Release",
     "framework"     : "netcoreapp2.1",
@@ -14,8 +14,9 @@
     "function-memory-size" : 256,
     "function-timeout"     : 30,
     "function-handler"     : "AWS_Lambda::AWS_Lambda.Function::FunctionHandler",
-    "function-name"        : "SchnitizeOrNot",
-    "function-role"        : "arn:aws:iam::583467868209:role/lambda_exec_SchnitizeOrNot",
+    "function-name"        : "abc",
+    "function-role"        : "arn:aws:iam::583467868209:role/lambda_exec_abc",
     "tracing-mode"         : "PassThrough",
-    "environment-variables" : ""
+    "environment-variables" : "\"AppS3Bucket\"=\"salesitemsapi-bucket-er6ht309kkvp\"",
+    "function-description"  : ""
 }

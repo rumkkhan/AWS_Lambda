@@ -24,28 +24,28 @@ namespace AWS_Serverless.Controllers
          
             _itemListService = itemListService;
         }
-        [HttpGet]
-        public IActionResult List()
+        [HttpGet("{name}")]
+        public IActionResult List(string name)
         {
-            var result = _itemListService.Getitems();
+            //var result = _itemListService.Getitems();
 
-            return Ok(result);
+            return Ok(name);
         }
 
-        [HttpPost]
-        public IActionResult AddItems([FromBody] Item item)
-        {
+        //[HttpPost]
+        //public IActionResult AddItems([FromBody]string name)
+        //{
 
-            _itemListService.AddItemsToList(item);
+        //    //_itemListService.AddItemsToList(item);
 
-            return Ok();
-        }
-        [HttpDelete]
-        public IActionResult DeleteItems([FromBody] Item item)
-        {
-            _itemListService.DeleteItems(item);
-            return Ok();
-        }
+        //    return Ok(name);
+        //}
+        //[HttpDelete]
+        //public IActionResult DeleteItems([FromBody] Item item)
+        //{
+        //    _itemListService.DeleteItems(item);
+        //    return Ok();
+        //}
 
        
     }
