@@ -24,8 +24,8 @@ namespace S3Test.services
         {
             try
             {
-                
-                if (await AmazonS3Util.DoesS3BucketExistV2Async(_client, bucketName) == false)
+                var res = await AmazonS3Util.DoesS3BucketExistV2Async(_client, bucketName);
+                if (res == false)
                 {
                     var putBucketRequest = new PutBucketRequest
                     {
