@@ -129,6 +129,7 @@ namespace S3Test.services
                 byte[] data;
                 using (var response = await _client.GetObjectAsync(request))
                 using (var responseStream = response.ResponseStream)
+               
                 using (XLWorkbook workBook = new XLWorkbook(responseStream))
                 {
                     //Read the first Sheet from Excel file.
@@ -180,6 +181,7 @@ namespace S3Test.services
                     var createText = "";
                     File.WriteAllText(pathAndFileNamee, createText);
                 }
+           
             }
             catch (AmazonS3Exception e)
             {
