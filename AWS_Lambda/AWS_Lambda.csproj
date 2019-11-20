@@ -13,6 +13,7 @@
     <PackageReference Include="AWSSDK.Extensions.NETCORE.Setup" Version="3.3.100.1" />
     <PackageReference Include="AWSSDK.Rekognition" Version="3.3.101.39" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.106.6" />
+    <PackageReference Include="ClosedXML" Version="0.94.2" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,7 @@ using Amazon.Rekognition;
 using Amazon.Rekognition.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
+using ClosedXML.Excel;
 using ExcelDataReader;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -30,7 +31,7 @@ namespace AWS_Lambda
         /// 
        
             [assembly: Amazon.Lambda.Core.LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
-        public async Task<string> FunctionHandler(S3Event evnt, ILambdaContext context)
+        public async Task<DataTable> FunctionHandler(S3Event evnt, ILambdaContext context)
         {
             var s3Event = evnt.Records?[0].S3;
             if (s3Event == null)
@@ -40,11 +41,11 @@ namespace AWS_Lambda
 
             try
             {
-                if (s3Event.Object.Key.ToLower().Contains("thumb"))
-                {
-                    //Console.WriteLine("The image is already a thumb file");
-                    return "The file is aready a thumb image file";
-                }
+                //if (s3Event.Object.Key.ToLower().Contains("thumb"))
+                //{
+                //    //Console.WriteLine("The image is already a thumb file");
+                //    return "The file is aready a thumb image file";
+                //}
 
                 string filename = s3Event.Object.Key;
 
@@ -69,21 +70,63 @@ namespace AWS_Lambda
                     BucketName = s3Event.Bucket.Name,
                     Key = s3Event.Object.Key
                 };
-                using (GetObjectResponse response = await client.GetObjectAsync(request))
+                string responseBody;
+                byte[] data;
+                using (var response = await client.GetObjectAsync(request))
+                using (var responseStream = response.ResponseStream)
+
+                using (XLWorkbook workBook = new XLWorkbook(responseStream))
                 {
+                    //Read the first Sheet from Excel file.
+                    IXLWorksheet workSheet = workBook.Worksheet(1);
 
-                    IExcelDataReader reader = ExcelReaderFactory.CreateBinaryReader(response.ResponseStream);
-                    var ss = reader.GetData(1);
-                    //using (IExcelDataReader reader = new ExcelReaderFactory.CreateBinaryReader(response.ResponseStream))
+                    //Create a new DataTable.
+                    DataTable dt = new DataTable();
+                    bool firstRow = true;
+
+                    foreach (IXLRow row in workSheet.Rows())
+                    {
+                        //Use the first row to add columns to DataTable.
+                        if (firstRow)
+                        {
+                            foreach (IXLCell cell in row.Cells())
+                            {
+                                Console.WriteLine(cell.Value.ToString());
+                                dt.Columns.Add(cell.Value.ToString());
+                            }
+                            firstRow = false;
+                        }
+                        else
+                        {
+                            //Add rows to DataTable.
+                            dt.Rows.Add();
+                            int i = 0;
+                            foreach (IXLCell cell in row.Cells())
+                            {
+                                dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
+                                i++;
+                            }
+                        }
+
+                    }
+                    //    using (var reader = new StreamReader(responseStream))
                     //{
-
-                       Console.WriteLine(ss);
-
+                    //    var title = response.Metadata["x-amz-meta-title"];
+                    //    var contentType = response.Headers["Content-Type"];
+                    //    var pathAndFileName = $"D:\\{keyName}";
+                    //    responseBody = reader.ReadToEnd();
+                    //    using (MemoryStream ms = new MemoryStream())
+                    //    {
+                    //        reader.BaseStream.CopyTo(ms);
+                    //        data = ms.ToArray();
+                    //    }
+                    //    File.WriteAllBytes("pathAndFileName", data);
+                    //    //byte[] bytes = reader;
                     //}
-
-                    return "Thumbnail version of the image has been created";
-
+                    Console.WriteLine("No of rows",dt.Rows.Count);
+                    return dt;
                 }
+
             }
             catch (Exception e)
             {

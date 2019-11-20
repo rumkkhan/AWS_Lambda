@@ -163,6 +163,8 @@ namespace S3Test.services
                         }
 
                     }
+                    var aa = dt.Rows.Count;
+
                     //    using (var reader = new StreamReader(responseStream))
                     //{
                     //    var title = response.Metadata["x-amz-meta-title"];
