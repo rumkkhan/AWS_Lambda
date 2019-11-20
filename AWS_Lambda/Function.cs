@@ -30,7 +30,7 @@ namespace AWS_Lambda
                             {
                                 Image = new Image
                                 {
-                                    S3Object = new S3Object
+                                    S3Object = new S3Object 
                                     {
                                         Bucket = "schnitizeornot",
                                         Name = input
