@@ -121,7 +121,7 @@ namespace S3Test.services
                 { 
                         BucketName = buckName,
                         Key = keyName
-                        
+                         
                 };
                 string responseBody;
                 using (var response = await _client.GetObjectAsync(request))
