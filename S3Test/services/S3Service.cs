@@ -131,7 +131,7 @@ namespace S3Test.services
                 var request = new GetObjectRequest
                 {
                     BucketName = buckName,
-                    Key = keyName
+                    Key = keyName 
 
                 };
                 string responseBody;
