@@ -8,6 +8,10 @@
     <PackageReference Include="AWSSDK.Extensions.NETCORE.Setup" Version="3.3.100.1" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.106.6" />
     <PackageReference Include="ClosedXML" Version="0.94.2" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.9.1" />
+    <PackageReference Include="EPPlus" Version="4.5.3.2" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="GemBox.Spreadsheet" Version="45.0.0.1061" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.0.0">
@@ -16,6 +20,15 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="NPOI" Version="2.4.1" />
+    <PackageReference Include="Spire.XLS" Version="9.11.2" />
+    <PackageReference Include="System.IO" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Spire.XLS">
+      <HintPath>\\naveenb\Shared\Ramzan\Spire.XLS.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
