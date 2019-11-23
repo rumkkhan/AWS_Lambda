@@ -39,9 +39,9 @@ namespace S3Test.controllers
         [Route("GetFile/{bucketName}")]
         public async Task<IActionResult> GetObjectFromS3Async([FromRoute] string bucketName)
         {
-            await _service.GetObjectFromS3Async(bucketName);
+           var result =  await  _service.GetObjectFromS3Async(bucketName);
 
-            return Ok();
+            return Ok(result);
         }
     }
 }

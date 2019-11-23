@@ -18,6 +18,9 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using NPOI.XSSF.UserModel;
+using CellType = NPOI.SS.UserModel.CellType;
+using System.Collections;
 
 namespace S3Test.services
 {
@@ -25,6 +28,7 @@ namespace S3Test.services
     {
         private readonly IAmazonS3 _client;
         private InternalWorkbook stream;
+        phoenixgstContext _context = new phoenixgstContext();
 
         public S3Service(IAmazonS3 client)
         {
@@ -122,10 +126,11 @@ namespace S3Test.services
             }
         }
 
-        public async Task GetObjectFromS3Async(string buckName)
+        public async Task<List<TranAnxDto>> GetObjectFromS3Async(string buckName)
         {
+            var newdata = new List<TranAnxDto>() ;
             const string keyName = "ANX -1 Normal30knew.xls";
-
+            Assessee assessee = new Assessee();
             try
             {
                 var request = new GetObjectRequest
@@ -153,19 +158,20 @@ namespace S3Test.services
                     int cellCountt = headerRowr.LastCellNum;
                     countSheets = hssfwb.Count;
                     //get first sheet from workbook  
-                    for (int i = 0; i < hssfwb.Count; i++)
-                    {
-                        sheet = hssfwb.GetSheetAt(i + 1);
-                        var Name = hssfwb.GetSheetName(i);//get sheet names
+                    //for (int i = 0; i < hssfwb.Count; i++)
+                    //{
+                        sheet = hssfwb.GetSheetAt(2);
+                        var Name = hssfwb.GetSheetName(2);//get sheet names
                         IRow headerRow = sheet.GetRow(5); //Get Header Row
                         int cellCount = headerRow.LastCellNum;
 
-                     var    abc = renderData(headerRow, cellCount, sheet);
-                    }
-
+                       newdata = renderData(headerRow, cellCount, sheet);
+                        
+                   // }
 
 
                 }
+               
 
             }
             catch (AmazonS3Exception e)
@@ -176,34 +182,84 @@ namespace S3Test.services
             {
                 Console.WriteLine("UnKnown encountered on server. Message:'{0}' when writing an object", e.Message);
             }
+            var result = _context.Assessee.Where(a => a.AssesseeId == 1).FirstOrDefault();
+            return newdata;
         }
 
-        long count = 0;
+        string data = "";
 
-        public long renderData(IRow headerRow, int cellCount, ISheet sheet)
+        public List<TranAnxDto> renderData(IRow headerRow, int cellCount, ISheet sheet)
         {
+            List<TranAnxDto> tranAnxDtos = new List<TranAnxDto>();
             for (int j = 0; j < cellCount; j++)
             {
                 NPOI.SS.UserModel.ICell cell = headerRow.GetCell(j);
                 if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
-                var cel = cell.ToString();
-                count++;
+                data += cell.ToString();
+               
             }
-            for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++) //Read Excel File
+            List<string[]> allData = new List<string[]>();
+            List<TranAnxDto> tranAnx = new List<TranAnxDto>();
+            string[] a;
+            ArrayList myList = new ArrayList();
+            for (int i = (sheet.FirstRowNum + 7); i <= sheet.LastRowNum; i++) //Read Excel File
             {
                 IRow row = sheet.GetRow(i);
+                
+
+                a = new string[17];
                 if (row == null) continue;
-                if (row.Cells.All(d => d.CellType == NPOI.SS.UserModel.CellType.Blank)) continue;
+                if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
                 for (int j = row.FirstCellNum; j < cellCount; j++)
                 {
                     if (row.GetCell(j) != null)
                     {
-                        var c = row.GetCell(j).ToString();
+                        data =  row.GetCell(j).ToString();
+                        a[j] = row.GetCell(j).ToString();
                     }
-                    count++;
+                    
                 }
+
+                tranAnx.Add(new TranAnxDto
+                {
+                    OrgGstin = a[0],
+                    PartyName = a[1],
+                    Typee = a[2],
+                    InNumber = a[3],
+                    Date = a[4],
+                    DocValue = a[5],
+                    TaxableValue = a[6],
+                    Rate = a[7],
+                    Igst = a[8],
+                    Cgst = a[9],
+                    Sgst = a[10],
+                    Cess = a[11],
+                    Pos = a[12],
+                    HSN = a[13],
+                    Diff = a[14],
+                    Supply = a[15],
+                }); ;
+             
+                myList.Add(a);
             }
-            return count;
+            MDetails mDetails;
+            ICollection<Trananxdet> trananxdet1;
+            tranAnx = tranAnx.GroupBy(x => new { x.OrgGstin, x.PartyName })
+                    .Select(x => new TranAnxDto
+                    {
+                        
+                         PartyName= x.FirstOrDefault().PartyName,
+
+
+                        Trananxdet = x.Select((y, index) => new Trananxdet
+                        {
+                             Hsnsac =  y.HSN,
+      
+                                  
+                        }).ToList()
+                    }).ToList();
+
+            return tranAnx;
         }
     }
 }
