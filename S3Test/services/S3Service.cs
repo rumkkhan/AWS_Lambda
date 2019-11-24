@@ -285,7 +285,7 @@ namespace S3Test.services
                 
                     
             });              
-            }
+            } 
            
             try
             {
