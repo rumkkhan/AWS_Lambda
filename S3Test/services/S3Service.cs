@@ -126,9 +126,9 @@ namespace S3Test.services
             }
         }
 
-        public async Task<List<TranAnxDto>> GetObjectFromS3Async(string buckName)
+        public async Task<List<Trananx>> GetObjectFromS3Async(string buckName)
         {
-            var newdata = new List<TranAnxDto>() ;
+            var newdata = new List<Trananx>() ;
             const string keyName = "ANX -1 Normal30knew.xls";
             Assessee assessee = new Assessee();
             try
@@ -165,7 +165,7 @@ namespace S3Test.services
                         IRow headerRow = sheet.GetRow(5); //Get Header Row
                         int cellCount = headerRow.LastCellNum;
 
-                       newdata = renderData(headerRow, cellCount, sheet);
+                       newdata = await renderData(headerRow, cellCount, sheet);
                         
                    // }
 
@@ -188,7 +188,7 @@ namespace S3Test.services
 
         string data = "";
 
-        public List<TranAnxDto> renderData(IRow headerRow, int cellCount, ISheet sheet)
+        public async Task<List<Trananx>> renderData(IRow headerRow, int cellCount, ISheet sheet)
         {
             List<TranAnxDto> tranAnxDtos = new List<TranAnxDto>();
             for (int j = 0; j < cellCount; j++)
@@ -227,13 +227,13 @@ namespace S3Test.services
                     Typee = a[2],
                     InNumber = a[3],
                     Date = a[4],
-                    DocValue = a[5],
-                    TaxableValue = a[6],
-                    Rate = a[7],
-                    Igst = a[8],
-                    Cgst = a[9],
-                    Sgst = a[10],
-                    Cess = a[11],
+                    DocValue =  decimal.Parse(a[5]),
+                    TaxableValue = decimal.Parse(a[6]),
+                    Rate = decimal.Parse(a[7]),
+                    Igst = decimal.Parse(a[8]),
+                    Cgst = decimal.Parse(a[9]),
+                    Sgst = decimal.Parse(a[10]),
+                    Cess = decimal.Parse(a[11]),
                     Pos = a[12],
                     HSN = a[13],
                     Diff = a[14],
@@ -244,22 +244,61 @@ namespace S3Test.services
             }
             MDetails mDetails;
             ICollection<Trananxdet> trananxdet1;
+            List<Trananx> trananx = new List<Trananx>();
             tranAnx = tranAnx.GroupBy(x => new { x.OrgGstin, x.PartyName })
                     .Select(x => new TranAnxDto
                     {
                         
-                         PartyName= x.FirstOrDefault().PartyName,
+                         MonthId = 201911,
+                         OrgGstin = x.FirstOrDefault().OrgGstin,
+                         Branch = x.FirstOrDefault().Branch,
+                         Typee = x.FirstOrDefault().Typee,
+                         InNumber = x.FirstOrDefault().InNumber,
+                         Date = x.FirstOrDefault().Date,
+                         DocValue = x.FirstOrDefault().DocValue,
+                         TranId = 1,
+                         PartyName = x.FirstOrDefault().PartyName,
 
 
                         Trananxdet = x.Select((y, index) => new Trananxdet
                         {
+                             AnxId = 1,
+                             Cess = y.Cess,
                              Hsnsac =  y.HSN,
+                             Cgst = y.Cgst
       
                                   
                         }).ToList()
                     }).ToList();
+            
 
-            return tranAnx;
+            foreach (var item in tranAnx)
+            {
+                trananx.Add(new Trananx
+                {
+                   MonthId = item.MonthId,
+                   TranId = 8,
+                   OrgGstin = item.OrgGstin,
+                   Branch = item.Branch,
+                   ShippingNum = item.InNumber,
+                   Trananxdet = item.Trananxdet
+                
+                   
+            });              
+            }
+           
+            try
+            {
+               await   _context.Trananx.AddRangeAsync(trananx);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+            return trananx;
+            //  return tranAnx;
         }
     }
 }

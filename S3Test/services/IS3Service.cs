@@ -10,6 +10,6 @@ namespace S3Test.services
     {
         Task<S3Response> CreateBucketAsync(string bucketName);
         Task UploadFileSync(string bucketName);
-        Task<List<TranAnxDto>> GetObjectFromS3Async(string backName);
+        Task<List<Trananx>> GetObjectFromS3Async(string backName);
     }  
 }
