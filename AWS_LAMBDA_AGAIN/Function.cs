@@ -21,7 +21,7 @@ namespace AWS_LAMBDA_AGAIN
         /// <returns></returns>
         public string FunctionHandler(string input, ILambdaContext context)
         {
-            return input?.ToUpper();
+            return input?.ToUpper(); 
         }
     }
 }
