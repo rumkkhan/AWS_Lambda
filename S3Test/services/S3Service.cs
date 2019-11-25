@@ -237,6 +237,7 @@ namespace S3Test.services
                     Cgst = decimal.Parse(a[9]),
                     Sgst = decimal.Parse(a[10]),
                     Cess = decimal.Parse(a[11]),
+
                     Pos = a[12],
                     HSN = a[13],
                     Diff = a[14],
