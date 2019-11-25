@@ -80,10 +80,10 @@ namespace S3Test.services
             };
         }
 
-        private const string FilePath = "C:\\Steps.txt";
+        private const string FilePath = "C:\\ANX -1 Normal30knew.xls";
         private const string UploadWithKeyName = "UploadWithKeyName";
         private const string FileStreamUpload = "FileStreamUpload";
-        private const string AdvancedUpload = "AdvancedUpload";
+        private const string AdvancedUpload = "excelfile";
 
         public async Task UploadFileSync(string bucketName)
         {
@@ -108,9 +108,9 @@ namespace S3Test.services
                     StorageClass = S3StorageClass.Standard,
                     PartSize = 6291456,
                     Key = AdvancedUpload,
-                    CannedACL = S3CannedACL.NoACL
+                    CannedACL = S3CannedACL.NoACL,                   
                 };
-                fileTransferUtilityRequest.Metadata.Add("parm1", "Value1");
+                fileTransferUtilityRequest.Metadata.Add("AnxID", "1234");
                 fileTransferUtilityRequest.Metadata.Add("parm2", "Value2");
 
                 await fileTransferUtility.UploadAsync(fileTransferUtilityRequest);
@@ -129,15 +129,15 @@ namespace S3Test.services
         public async Task<List<Trananx>> GetObjectFromS3Async(string buckName)
         {
             var newdata = new List<Trananx>() ;
-            const string keyName = "ANX -1 Normal30knew.xls";
+            const string keyName = "excelfile";
+            
             Assessee assessee = new Assessee();
             try
             {
                 var request = new GetObjectRequest
                 {
                     BucketName = buckName,
-                    Key = keyName  
-
+                    Key = keyName                   
                 };
                 string responseBody;
                 byte[] data;
@@ -148,8 +148,11 @@ namespace S3Test.services
                 using (Stream responseStream = response.ResponseStream)
                 using (MemoryStream memStream = new MemoryStream())
                 {
-                   
-                    responseStream.CopyTo(memStream);
+                    var title = response.Metadata["x-amz-meta-anxid"];
+                  
+                    
+
+                                        responseStream.CopyTo(memStream);
                     memStream.Seek(0, SeekOrigin.Begin);
                     HSSFWorkbook hssfwb = new HSSFWorkbook(memStream);
                      sheet = hssfwb.GetSheetAt(2);
@@ -242,8 +245,7 @@ namespace S3Test.services
              
                 myList.Add(a);
             }
-            MDetails mDetails;
-            ICollection<Trananxdet> trananxdet1;
+            
             List<Trananx> trananx = new List<Trananx>();
             tranAnx = tranAnx.GroupBy(x => new { x.OrgGstin, x.PartyName })
                     .Select(x => new TranAnxDto
@@ -270,20 +272,40 @@ namespace S3Test.services
                                   
                         }).ToList()
                     }).ToList();
-            
 
+            //var monthId = _context.Monthmain.Where(m => m.MonthId == 1).Select(y => y.mo;
+
+            //period(excel cloumn) + clientId ExcelName +   GSTRNO uI +
+            var tranId = _context.Monthmain.Where(m => m.TranId == 8).FirstOrDefault();
+
+          //  var partyMaster = _context.Partymaster.Where
+
+            //excelperio
             foreach (var item in tranAnx)
             {
-                trananx.Add(new Trananx
+                //_currTranDetails.PartyID = Common.ConvertToInt(_uiPartyNameMat.PartyDetailList.Where(c => c.GSTIN == item.ctin).Select(c => c.PartyID).FirstOrDefault());
+                // if ( p === 0)
+                //{
+                //    PartyDetails info = new PartyDetails
+                //    {
+                //        PartyType = istdstcsParty ? (int)PartyType.TaxDeductor : (int)PartyType.B2B,
+                //        GSTIN = item.ctin,
+                //        Name = item.ctin,
+                //        State = item.ctin.Trim().Remove(2)// header.pos
+                //    };
+                //    _uiPartyNameMat.Save(info);
+                //    _currTranDetails.PartyID = Common.ConvertToInt(_uiPartyNameMat.PartyDetailList.Where(c => c.GSTIN == item.ctin).Select(c => c.PartyID).FirstOrDefault());
+                //    //}
+                    trananx.Add(new Trananx
                 {
-                   MonthId = item.MonthId,
-                   TranId = 8,
+                   MonthId = item.MonthId,//month main
+                    TranId = 8,//month main
                    OrgGstin = item.OrgGstin,
                    Branch = item.Branch,
                    ShippingNum = item.InNumber,
-                   Trananxdet = item.Trananxdet
-                
-                    
+                   Trananxdet = item.Trananxdet 
+                   //PartyId = 
+
             });              
             } 
            
