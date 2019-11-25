@@ -18,7 +18,7 @@ namespace S3Test.Models
         public string Typee { get; set; }
         public string InNumber { get; set; }
         public string  Date { get; set; }
-
+        public string PortCode { get; set; }
         public decimal? DocValue { get; set; }
 
         public decimal? TaxableValue { get; set; }

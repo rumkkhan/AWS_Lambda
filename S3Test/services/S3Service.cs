@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using NPOI.XSSF.UserModel;
 using CellType = NPOI.SS.UserModel.CellType;
 using System.Collections;
+using S3Test.Models.dto;
 
 namespace S3Test.services
 {
@@ -129,7 +130,7 @@ namespace S3Test.services
         public async Task<List<Trananx>> GetObjectFromS3Async(string buckName)
         {
             var newdata = new List<Trananx>() ;
-            const string keyName = "excelfile";
+            const string keyName = "deo.xls";
             
             Assessee assessee = new Assessee();
             try
@@ -246,9 +247,9 @@ namespace S3Test.services
              
                 myList.Add(a);
             }
-            
+            //excel data sorted
             List<Trananx> trananx = new List<Trananx>();
-            tranAnx = tranAnx.GroupBy(x => new { x.OrgGstin, x.PartyName })
+            tranAnx = tranAnx.GroupBy(x => new { x.OrgGstin, x.InNumber })
                     .Select(x => new TranAnxDto
                     {
                         
@@ -274,18 +275,81 @@ namespace S3Test.services
                         }).ToList()
                     }).ToList();
 
-            //var monthId = _context.Monthmain.Where(m => m.MonthId == 1).Select(y => y.mo;
+            var  partyMaster0 = new List<PartyMasterDto>();
+            var partyMaster2 = new List<PartyMasterDto>();
 
-            //period(excel cloumn) + clientId ExcelName +   GSTRNO uI +
+            var pm = new List<Partymaster>();
+
+            // fetch party master first time 
+            try
+            {
+                var partyMaster = _context.Partymaster.Where(p => p.ClientId == 1).Select(x => new PartyMasterDto { Gstin = x.Gstin, PartyId = x.PartyId }).ToList();
+
+
+                foreach (var anx in tranAnx)
+                {
+                    var gstn = partyMaster.Where(x => x.Gstin == anx.OrgGstin).FirstOrDefault();
+                    if (gstn == null)
+                    {
+                        partyMaster0.Add(new PartyMasterDto
+                        {
+                            ClientId = 1,
+                            EntityId = 1,
+                            Gstin = anx.OrgGstin,
+                            PartyName = anx.PartyName
+
+
+                        });
+                    }
+
+                }
+
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+          
+            foreach (var item in partyMaster0)
+            {
+                pm.Add(new Partymaster
+                {
+                    ClientId = item.ClientId,
+                    EntityId = item.EntityId,
+                    Gstin = item.Gstin,
+                    PartyName = item.PartyName
+                });
+            }
+       await     _context.AddRangeAsync(pm);
+            await _context.SaveChangesAsync();
+            //reterive party mater agian
+            var partyMasterw =  _context.Partymaster.Where(p => p.ClientId == 1).Select(x => new PartyMasterDto { Gstin = x.Gstin, PartyId = x.PartyId }).ToList();
             var tranId = _context.Monthmain.Where(m => m.TranId == 8).FirstOrDefault();
 
-          //  var partyMaster = _context.Partymaster.Where
+            //  var partyMaster = _context.Partymaster.Where
 
             //excelperio
+
             foreach (var item in tranAnx)
             {
-                //_currTranDetails.PartyID = Common.ConvertToInt(_uiPartyNameMat.PartyDetailList.Where(c => c.GSTIN == item.ctin).Select(c => c.PartyID).FirstOrDefault());
-                // if ( p === 0)
+               
+               var PartyID = partyMasterw.Where(c => c.Gstin == item.OrgGstin).Select(c => c.PartyId).FirstOrDefault();
+                if (PartyID != 0)
+                {
+                    trananx.Add(new Trananx
+                    {
+                        MonthId = item.MonthId,//month main
+                        TranId = 8,//month main
+                        OrgGstin = item.OrgGstin,
+                        Branch = item.Branch,
+                        ShippingNum = item.InNumber,
+                        Trananxdet = item.Trananxdet,
+                        PartyId = PartyID
+
+                    });
+                }
                 //{
                 //    PartyDetails info = new PartyDetails
                 //    {
@@ -297,22 +361,12 @@ namespace S3Test.services
                 //    _uiPartyNameMat.Save(info);
                 //    _currTranDetails.PartyID = Common.ConvertToInt(_uiPartyNameMat.PartyDetailList.Where(c => c.GSTIN == item.ctin).Select(c => c.PartyID).FirstOrDefault());
                 //    //}
-                    trananx.Add(new Trananx
-                {
-                   MonthId = item.MonthId,//month main
-                    TranId = 8,//month main
-                   OrgGstin = item.OrgGstin,
-                   Branch = item.Branch,
-                   ShippingNum = item.InNumber,
-                   Trananxdet = item.Trananxdet 
-                   //PartyId = 
+               
+            }
 
-            });              
-            } 
-           
             try
             {
-               await   _context.Trananx.AddRangeAsync(trananx);
+                await _context.Trananx.AddRangeAsync(trananx);
                 await _context.SaveChangesAsync();
             }
             catch (Exception e)
@@ -320,6 +374,7 @@ namespace S3Test.services
 
                 throw;
             }
+
             return trananx;
             //  return tranAnx;
         }
