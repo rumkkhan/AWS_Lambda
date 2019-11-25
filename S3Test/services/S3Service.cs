@@ -221,7 +221,7 @@ namespace S3Test.services
                         a[j] = row.GetCell(j).ToString();
                     }
                     
-                }
+                } 
 
                 tranAnx.Add(new TranAnxDto
                 {
