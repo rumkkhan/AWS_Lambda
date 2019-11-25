@@ -227,7 +227,7 @@ namespace S3Test.services
                 { 
                     OrgGstin = a[0],
                     PartyName = a[1],
-                    Typee = a[2],
+                    Typee = a[2], 
                     InNumber = a[3],
                     Date = a[4],
                     DocValue =  decimal.Parse(a[5]),
