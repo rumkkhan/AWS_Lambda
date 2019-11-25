@@ -224,7 +224,7 @@ namespace S3Test.services
                 } 
 
                 tranAnx.Add(new TranAnxDto
-                {
+                { 
                     OrgGstin = a[0],
                     PartyName = a[1],
                     Typee = a[2],
