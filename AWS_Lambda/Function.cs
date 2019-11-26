@@ -18,7 +18,7 @@ namespace AWS_Lambda
         /// <summary>
         /// A simple function that takes a string and does a ToUpper
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="input"></param> 
         /// <param name="context"></param>
         /// <returns></returns>
         public async Task<bool> FunctionHandler(string input, ILambdaContext context)
