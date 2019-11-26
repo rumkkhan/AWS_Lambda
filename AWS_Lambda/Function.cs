@@ -24,7 +24,7 @@ namespace AWS_Lambda
         public async Task<bool> FunctionHandler(string input, ILambdaContext context)
         {
             var rekoginitionClient = new AmazonRekognitionClient();
-
+             
             var detectResponse = await rekoginitionClient.DetectLabelsAsync(
                             new DetectLabelsRequest
                             {
