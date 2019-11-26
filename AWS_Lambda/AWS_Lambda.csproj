@@ -15,6 +15,7 @@
     <PackageReference Include="AWSSDK.S3" Version="3.3.106.6" />
     <PackageReference Include="ClosedXML" Version="0.94.2" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="NPOI" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="services\" />

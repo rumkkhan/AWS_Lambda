@@ -22,6 +22,7 @@ using NPOI.XSSF.UserModel;
 using CellType = NPOI.SS.UserModel.CellType;
 using System.Collections;
 using S3Test.Models.dto;
+using Microsoft.EntityFrameworkCore;
 
 namespace S3Test.services
 {
@@ -130,7 +131,7 @@ namespace S3Test.services
         public async Task<List<Trananx>> GetObjectFromS3Async(string buckName)
         {
             var newdata = new List<Trananx>() ;
-            const string keyName = "deo.xls";
+            const string keyName = "ANX -1 Normal30knew.xls";
             
             Assessee assessee = new Assessee();
             try
@@ -283,23 +284,28 @@ namespace S3Test.services
             // fetch party master first time 
             try
             {
-                var partyMaster = _context.Partymaster.Where(p => p.ClientId == 1).Select(x => new PartyMasterDto { Gstin = x.Gstin, PartyId = x.PartyId }).ToList();
+                var partyMaster = await _context.Partymaster.Where(p => p.ClientId == 1).Select(x => new PartyMasterDto { Gstin = x.Gstin, PartyId = x.PartyId }).ToListAsync();
 
 
                 foreach (var anx in tranAnx)
                 {
-                    var gstn = partyMaster.Where(x => x.Gstin == anx.OrgGstin).FirstOrDefault();
+                    var gstn = partyMaster.Where(x => x.Gstin == anx.OrgGstin).SingleOrDefault();
                     if (gstn == null)
                     {
-                        partyMaster0.Add(new PartyMasterDto
+
+                        if (!partyMaster0.Exists(x => x.Gstin.Contains(anx.OrgGstin)))
                         {
-                            ClientId = 1,
-                            EntityId = 1,
-                            Gstin = anx.OrgGstin,
-                            PartyName = anx.PartyName
+                            partyMaster0.Add(new PartyMasterDto
+                            {
+                                ClientId = 1,
+                                EntityId = 1,
+                                Gstin = anx.OrgGstin,
+                                PartyName = anx.PartyName
 
 
-                        });
+                            });
+                        }
+                      
                     }
 
                 }
@@ -325,11 +331,10 @@ namespace S3Test.services
        await     _context.AddRangeAsync(pm);
             await _context.SaveChangesAsync();
             //reterive party mater agian
-            var partyMasterw =  _context.Partymaster.Where(p => p.ClientId == 1).Select(x => new PartyMasterDto { Gstin = x.Gstin, PartyId = x.PartyId }).ToList();
+            var partyMasterw = await  _context.Partymaster.Where(p => p.ClientId == 1).Select(x => new PartyMasterDto { Gstin = x.Gstin, PartyId = x.PartyId }).ToListAsync();
             var tranId = _context.Monthmain.Where(m => m.TranId == 8).FirstOrDefault();
 
             //  var partyMaster = _context.Partymaster.Where
-
             //excelperio
 
             foreach (var item in tranAnx)
@@ -340,14 +345,13 @@ namespace S3Test.services
                 {
                     trananx.Add(new Trananx
                     {
-                        MonthId = item.MonthId,//month main
-                        TranId = 8,//month main
+                        MonthId = item.MonthId,//meta data 
+                        TranId = 8,//meta data
                         OrgGstin = item.OrgGstin,
                         Branch = item.Branch,
                         ShippingNum = item.InNumber,
                         Trananxdet = item.Trananxdet,
                         PartyId = PartyID
-
                     });
                 }
                 //{
