@@ -126,6 +126,8 @@ namespace S3Test.services
             {
                 Console.WriteLine("UnKnown encountered on server. Message:'{0}' when writing an object", e.Message);
             }
+        
+        
         }
 
         public async Task<List<Trananx>> GetObjectFromS3Async(string buckName)
@@ -133,7 +135,7 @@ namespace S3Test.services
             var newdata = new List<Trananx>() ;
             const string keyName = "ANX -1 Normal30knew.xls";
             
-            Assessee assessee = new Assessee();
+          
             try
             {
                 var request = new GetObjectRequest
@@ -211,7 +213,7 @@ namespace S3Test.services
             {
                 IRow row = sheet.GetRow(i);
                 
-
+                
                 a = new string[17];
                 if (row == null) continue;
                 if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
@@ -301,8 +303,6 @@ namespace S3Test.services
                                 EntityId = 1,
                                 Gstin = anx.OrgGstin,
                                 PartyName = anx.PartyName
-
-
                             });
                         }
                       

@@ -45,29 +45,14 @@ namespace AWS_Lambda
 
             try
             {
-                //if (s3Event.Object.Key.ToLower().Contains("thumb"))
-                //{
-                //    //Console.WriteLine("The image is already a thumb file");
-                //    return "The file is aready a thumb image file";
-                //}
 
                 string filename = s3Event.Object.Key;
 
-                string extension = Path.GetExtension(filename); //.jpeg with "dot"
+                string extension = Path.GetExtension(filename);
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                 AmazonS3Client client = new AmazonS3Client(Amazon.RegionEndpoint.APSouth1);
 
-                //using (var objectResponse = await client.GetObjectAsync(s3Event.Bucket.Name, s3Event.Object.Key))
-                //{
-                //    using (Stream responseStream = objectResponse.ResponseStream)
-                //    {
-
-
-                //            string contents = responseStream.EndRead()
-
-
-                //    }
-                //}
+            
 
                 GetObjectRequest request = new GetObjectRequest
                 {
@@ -161,5 +146,7 @@ namespace AWS_Lambda
                 throw;
             }
         }
+    
+    
     }
     }
