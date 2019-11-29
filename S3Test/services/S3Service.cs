@@ -143,8 +143,8 @@ namespace S3Test.services
                     BucketName = buckName,
                     Key = keyName                   
                 };
-                string responseBody;
-                byte[] data;
+          
+           
                 ISheet sheet;
                 var countSheets = 0;
                
@@ -205,16 +205,16 @@ namespace S3Test.services
                 data += cell.ToString();
                
             }
-            List<string[]> allData = new List<string[]>();
+           
             List<TranAnxDto> tranAnx = new List<TranAnxDto>();
-            string[] a;
-            ArrayList myList = new ArrayList();
+            string[] anx;
+            ArrayList anxList = new ArrayList();
             for (int i = (sheet.FirstRowNum + 7); i <= sheet.LastRowNum; i++) //Read Excel File
             {
                 IRow row = sheet.GetRow(i);
-                
-                
-                a = new string[17];
+
+
+                anx = new string[17];
                 if (row == null) continue;
                 if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
                 for (int j = row.FirstCellNum; j < cellCount; j++)
@@ -222,33 +222,33 @@ namespace S3Test.services
                     if (row.GetCell(j) != null)
                     {
                         data =  row.GetCell(j).ToString();
-                        a[j] = row.GetCell(j).ToString();
+                        anx[j] = row.GetCell(j).ToString();
                     }
                     
                 } 
                  
                 tranAnx.Add(new TranAnxDto
                 { 
-                    OrgGstin = a[0],
-                    PartyName = a[1],
-                    Typee = a[2], 
-                    InNumber = a[3],
-                    Date = a[4],
-                    DocValue =  decimal.Parse(a[5]),
-                    TaxableValue = decimal.Parse(a[6]),
-                    Rate = decimal.Parse(a[7]),
-                    Igst = decimal.Parse(a[8]),
-                    Cgst = decimal.Parse(a[9]),
-                    Sgst = decimal.Parse(a[10]),
-                    Cess = decimal.Parse(a[11]),
+                    OrgGstin = anx[0],
+                    PartyName = anx[1],
+                    Typee = anx[2], 
+                    InNumber = anx[3],
+                    Date = anx[4],
+                    DocValue =  decimal.Parse(anx[5]),
+                    TaxableValue = decimal.Parse(anx[6]),
+                    Rate = decimal.Parse(anx[7]),
+                    Igst = decimal.Parse(anx[8]),
+                    Cgst = decimal.Parse(anx[9]),
+                    Sgst = decimal.Parse(anx[10]),
+                    Cess = decimal.Parse(anx[11]),
 
-                    Pos = a[12],
-                    HSN = a[13],
-                    Diff = a[14],
-                    Supply = a[15],
+                    Pos = anx[12],
+                    HSN = anx[13],
+                    Diff = anx[14],
+                    Supply = anx[15],
                 }); ;
-             
-                myList.Add(a);
+
+                anxList.Add(anx);
             }
             //excel data sorted
             List<Trananx> trananx = new List<Trananx>();
@@ -289,20 +289,20 @@ namespace S3Test.services
                 var partyMaster = await _context.Partymaster.Where(p => p.ClientId == 1).Select(x => new PartyMasterDto { Gstin = x.Gstin, PartyId = x.PartyId }).ToListAsync();
 
 
-                foreach (var anx in tranAnx)
+                foreach (var Tanx in tranAnx)
                 {
-                    var gstn = partyMaster.Where(x => x.Gstin == anx.OrgGstin).SingleOrDefault();
+                    var gstn = partyMaster.Where(x => x.Gstin == Tanx.OrgGstin).SingleOrDefault();
                     if (gstn == null)
                     {
 
-                        if (!partyMaster0.Exists(x => x.Gstin.Contains(anx.OrgGstin)))
+                        if (!partyMaster0.Exists(x => x.Gstin.Contains(Tanx.OrgGstin)))
                         {
                             partyMaster0.Add(new PartyMasterDto
                             {
                                 ClientId = 1,
                                 EntityId = 1,
-                                Gstin = anx.OrgGstin,
-                                PartyName = anx.PartyName
+                                Gstin = Tanx.OrgGstin,
+                                PartyName = Tanx.PartyName
                             });
                         }
                       

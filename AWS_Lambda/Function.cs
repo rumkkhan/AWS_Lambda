@@ -62,8 +62,7 @@ namespace AWS_Lambda
                 Console.WriteLine($"bucket name:{s3Event.Bucket.Name}");
                 Console.WriteLine($"Key:{s3Event.Object.Key}");
 
-                string responseBody;
-                byte[] data;
+               
                 ISheet sheet;
                 var countSheets = 0;
                 using (var response = await client.GetObjectAsync(request))
@@ -93,7 +92,7 @@ namespace AWS_Lambda
                         //for (int i = 0; i < hssfwb.Count; i++)
                         //{
                         sheet = hssfwb.GetSheetAt(2);
-                        Console.WriteLine("asdfasdfasdfasdfasdfasfasdfasdfasdfasdfasdf");
+                        Console.WriteLine("success");
 
                         var Name = hssfwb.GetSheetName(2);//get sheet names
                         IRow headerRow = sheet.GetRow(5); //Get Header Row
@@ -128,7 +127,7 @@ namespace AWS_Lambda
 
 
 
-                            Console.WriteLine("not working....");
+                            Console.WriteLine("working.... done");
                             
                           
                         }
