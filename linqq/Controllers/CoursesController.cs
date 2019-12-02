@@ -13,18 +13,50 @@ namespace linqq.Controllers
     public class CoursesController : ControllerBase
     {
 
-        private readonly PlutoCodeFirstContext _plutoCodeFirstContext;
+        private readonly PlutoCodeFirstContext _plutoCodeFirstContext = new PlutoCodeFirstContext();
 
-        public CoursesController(PlutoCodeFirstContext plutoCodeFirstContext)
-        {
-            _plutoCodeFirstContext = plutoCodeFirstContext;
-        }
+        //1 _plutoCodeFirstContext.Courses.Where(x => x.Level == 1).ToList();
+        //var courses = _plutoCodeFirstContext.Courses.Where(x => x.Level == 1).OrderBy(y => y.FullPrice).ThenBy(x => x.Title).ToList();
+        // var courses = _plutoCodeFirstContext.Courses.Where(x => x.Level == 1).OrderByDescending(y => y.Id).OrderByDescending(x => x.FullPrice).ToList();
+        //---------------------------------------------------
+        //  var courses = _plutoCodeFirstContext.Courses.Where(x => x.Level == 1).OrderByDescending(y => y.Id).OrderByDescending(x => x.FullPrice).Select(x => new { Title = x.Title, FullPirce = x.FullPrice}).ToList();
+        //    List<Courses> course = new List<Courses>();
+        //        foreach (var item in courses)
+        //        {
+        //            course.Add(new Courses { FullPrice = item.FullPirce, Title = item.Title
+        //});
+        //        }
+        //-----------------------------------------------------
+        // var courses = _plutoCodeFirstContext.Courses.Where(x => x.Level == 1).SelectMany(x => x.TagCourses).Distinct();
+        //========================
+        //groupby
+//        var courses = _plutoCodeFirstContext.Courses.ToList().GroupBy(x => x.Level);
 
-        [HttpGet]
+//            foreach (var group in courses)
+//            {
+//                var key = group.Key;
+//                foreach (var item in group)
+//                {
+//                    var name = item.Title;
+//    }
+//}
+
+[HttpGet]
         public List<Courses> GetCouses()
         {
-            var courses = _plutoCodeFirstContext.Courses.ToList();
-            return courses;
+            var courses = _plutoCodeFirstContext.Courses.ToList().GroupBy(x => x.Level);
+
+            foreach (var  group in courses)
+            {
+                var key = group.Key;
+                foreach (var item in group)
+                {
+                    var name = item.Title;
+                }
+            }
+
+            return null;
+            
         }
     }
 } 
